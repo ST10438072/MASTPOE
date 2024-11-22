@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView,} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen = ({ navigation }) => {
@@ -8,22 +8,55 @@ const HomeScreen = ({ navigation }) => {
       id: 1,
       name: "Chef's Special Pizza",
       description: "A delightful Pizza with fresh ingredients and house-made toppings.",
+      weeklySpecials: {
+        Monday: "Margherita Madness",
+        Tuesday: "Tandoori Treat",
+        Wednesday: "Wild Mushroom Feast",
+        Thursday: "Truffle Bliss",
+        Friday: "Four Cheese Friday",
+        Saturday: "Sizzling Supreme",
+        Sunday: "Sunday Special Surprise",
+      },
     },
     {
       id: 2,
       name: "Combo Deals",
       description: "Grilled Tomahawk, Ribs, Lamb Chomps and Sides of choice.",
+      weeklySpecials: {
+        Monday: "Meat Lover's Monday",
+        Tuesday: "Tuesday Trio",
+        Wednesday: "Wacky Wings Wednesday",
+        Thursday: "Thick-Cut Thursday",
+        Friday: "Fried Feast Friday",
+        Saturday: "Steakhouse Saturday",
+        Sunday: "Slow-Roast Sunday",
+      },
     },
   ]);
 
-  const [newDish, setNewDish] = useState({ name: '', description: '' });
+  const [newDish, setNewDish] = useState({ name: '', description: '', weeklySpecials: {} });
   const [selectedDishId, setSelectedDishId] = useState(chefDishes[0]?.id || null);
+
+  const getCurrentDay = () => {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    return days[new Date().getDay()];
+  };
+
+  const currentDay = getCurrentDay();
 
   const addDish = () => {
     if (newDish.name && newDish.description) {
       const updatedDishes = [...chefDishes, { id: chefDishes.length + 1, ...newDish }];
       setChefDishes(updatedDishes);
-      setNewDish({ name: '', description: '' });
+      setNewDish({ name: '', description: '', weeklySpecials: {} });
     } else {
       Alert.alert('Error', 'Please fill in all fields');
     }
@@ -56,6 +89,21 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.dishContainer}>
           <Text style={styles.dishTitle}>{selectedDish.name}</Text>
           <Text style={styles.dishDescription}>{selectedDish.description}</Text>
+
+          <Text style={styles.subtitle}>Today's Special</Text>
+          <Text style={styles.specialText}>
+            {selectedDish.weeklySpecials[currentDay] || "No special available for today."}
+          </Text>
+
+          <Text style={styles.subtitle}>All Specials</Text>
+          <ScrollView style={styles.specialsList}>
+            {Object.entries(selectedDish.weeklySpecials).map(([day, special]) => (
+              <Text key={day} style={styles.daySpecial}>
+                <Text style={styles.day}>{day}:</Text> {special}
+              </Text>
+            ))}
+          </ScrollView>
+
           <TouchableOpacity style={styles.removeButton} onPress={() => removeDish(selectedDish.id)}>
             <Text style={styles.removeButtonText}>Remove Dish</Text>
           </TouchableOpacity>
@@ -93,8 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor:  '#FF69B4',
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#ADD8E6',
   },
   title: {
     fontSize: 28,
@@ -130,20 +177,42 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dishDescription: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#800080',
     textAlign: 'center',
   },
+  specialText: {
+    fontSize: 18,
+    color: '#FF4500',
+    textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  specialsList: {
+    maxHeight: 120,
+    width: '100%',
+    backgroundColor: '#f9f9f9',
+    padding: 10,
+    borderRadius: 8,
+    borderColor: '#ddd',
+    borderWidth: 1,
+  },
+  daySpecial: {
+    fontSize: 16,
+    marginVertical: 4,
+  },
+  day: {
+    fontWeight: 'bold',
+  },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: '#000000',
     borderWidth: 1,
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
   },
   addButton: {
-    backgroundColor: '#ADD8E6',
     backgroundColor: '#FF0000',
     paddingVertical: 12,
     borderRadius: 8,
@@ -168,7 +237,7 @@ const styles = StyleSheet.create({
   },
   orderButton: {
     marginTop: 20,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#000080',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -181,4 +250,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-//OpenAI. (2024). HomeScreen Component in React Native. Available at: GitHub Repository or Your Project (Accessed: 2 October 2024).\
